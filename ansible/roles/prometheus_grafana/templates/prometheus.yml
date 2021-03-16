@@ -17,6 +17,9 @@ scrape_configs:
 {% for receiver in receivers %}
         - "{{hostvars[receiver]['ec2_private_ip_address']}}:{{ mqperf_scrape_port}}"
 {% endfor %}
+  - job_name: 'sender'
+    static_configs:
+      - targets:
 {% for sender in senders %}
         - "{{hostvars[sender]['ec2_private_ip_address']}}:{{ mqperf_scrape_port}}"
 {% endfor %}
