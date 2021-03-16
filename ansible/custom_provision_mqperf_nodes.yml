@@ -1,0 +1,25 @@
+---
+
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - { role: ec2_instance, count: 8, ec2_groups: [ 'ssh_access', 'default' ], aws_instance_type: r5.2xlarge, ec2_tag_group: Receiver }
+
+- hosts: receiver
+  roles:
+  - role: java
+  - role: sbt
+  - role: python
+  - role: mqperf_receiver
+
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - { role: ec2_instance, count: 4, ec2_groups: [ 'ssh_access', 'default' ], aws_instance_type: r5.2xlarge, ec2_tag_group: Sender }
+
+- hosts: sender
+  roles:
+  - role: java
+  - role: sbt
+  - role: python
+  - role: mqperf_sender
