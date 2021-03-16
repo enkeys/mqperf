@@ -1,0 +1,4 @@
+artemis_name: apache-artemis-2.18.0-SNAPSHOT
+artemis_archive_name: "{{ artemis_name }}-bin.tar.gz"
+artemis_builded_dest: /tmp/{{ artemis_archive_name }}
+artemis_username: artemis

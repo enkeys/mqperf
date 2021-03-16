@@ -1,0 +1,9 @@
+---
+- name: Downloading sbt repo
+  shell: "curl https://bintray.com/sbt/rpm/rpm > bintray-sbt-rpm.repo"
+
+- name: Copying to yum.repos.d
+  shell: "sudo mv bintray-sbt-rpm.repo /etc/yum.repos.d/"
+
+- name: Installing sbt
+  shell: "sudo yum install sbt -y"
