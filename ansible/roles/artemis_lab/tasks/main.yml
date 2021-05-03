@@ -228,6 +228,23 @@
     replace: 'Xmx16G -XX:+AlwaysPreTouch'
     backup: yes
 
+- name: Download prometheus exporter agent
+  get_url:
+    url: "{{ artemis_prometheus_exporter_url }}"
+    dest: /opt/{{ artemis_name }}/lib/jmx_prometheus_javaagent-0.15.0.jar
+    owner: "{{ artemis_username }}"
+
+- name: Copy prometheus_exporter.yml to master
+  run_once: true
+  delegate_to: "{{ item }}"
+  template:
+    src: prometheus_exporter.yml
+    dest: /opt/{{ artemis_name }}-broker/etc/prometheus_exporter.yml
+  with_items:
+    - "{{ artemis_broker_master_1 }}"
+    - "{{ artemis_broker_slave_1 }}"
+
+
 - name: Allow Artemis replicator
   ansible.posix.firewalld:
     port: 61716/tcp

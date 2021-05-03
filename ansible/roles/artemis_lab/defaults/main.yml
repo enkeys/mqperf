@@ -6,3 +6,5 @@ artemis_download_url: https://archive.apache.org/dist/activemq/activemq-artemis/
 artemis_builded_dest:   /tmp/{{ artemis_archive_name }}
 
 artemis_username: artemis
+
+artemis_prometheus_exporter_url: https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.15.0/jmx_prometheus_javaagent-0.15.0.jar
