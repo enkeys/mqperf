@@ -1,0 +1,20 @@
+---
+
+- name: Copy assembly
+  ansible.builtin.copy:
+    src: "{{ mqperf_artifact_path }}"
+    dest: "/tmp/mqperf-assembly.jar"
+    mode: '0700'
+
+- name: Copy assembly deps
+  ansible.builtin.copy:
+    src: "{{ mqperf_deps_artifact_path }}"
+    dest: "/tmp/mqperf-assembly-deps.jar"
+    mode: '0700'
+
+- name: Prepare start/stop/status script
+  template:
+    src: mqperf.sh.j2
+    dest: /tmp/mqperf.sh
+    mode: 0700
+

@@ -1,0 +1,15 @@
+---
+
+- name: Build mqperf deps artifact
+  command: sbt assemblyPackageDependency
+  args:
+    chdir: "{{ mqperf_sources_dir }}"
+    creates: "{{ mqperf_deps_artifact_path }}"
+  register: deps_assembly
+
+- name: Build mqperf artifact
+  command: sbt assembly
+  args:
+    chdir: "{{ mqperf_sources_dir }}"
+    creates: "{{ mqperf_artifact_path }}"
+  register: assembly
