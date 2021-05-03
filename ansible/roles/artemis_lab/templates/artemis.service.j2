@@ -1,0 +1,15 @@
+[Unit]
+Description=Apache ActiveMQ Artemis
+After=network-online.target
+
+[Service]
+User=artemis
+Group=artemis
+WorkingDirectory=/opt/{{ artemis_name }}/bin
+ExecStart=/opt/{{ artemis_name }}-broker/bin/artemis run
+ExecStop=/opt/{{ artemis_name }}-broker/bin/artemis stop
+UMask=0007
+RestartSec=10
+Restart=always
+[Install]
+WantedBy=multi-user.target
