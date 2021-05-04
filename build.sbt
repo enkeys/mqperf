@@ -3,7 +3,7 @@ import sbt.Keys._
 
 lazy val commonSettings = Seq(
   version := "3.0",
-  scalaVersion := "2.12.11"
+  scalaVersion := "2.12.13"
 )
 
 lazy val root = (project in file("."))
@@ -28,7 +28,7 @@ lazy val oracleaq = project.in(file("oracleaq")).
 
 name := "mqperf"
 
-val prometheusVersion = "0.9.0"
+val prometheusVersion = "0.10.0"
 val doobieVersion = "0.9.0"
 
 libraryDependencies ++= Seq(
@@ -44,9 +44,9 @@ libraryDependencies ++= Seq(
   "org.apache.pulsar" % "pulsar-client" % "2.6.2" exclude ("org.apache.pulsar", "bouncy-castle-bc-shaded"),
   "org.scalatest" %% "scalatest" % "3.1.2" % Test,
   "com.geteventstore" %% "eventstore-client" % "7.3.0",
-  "org.apache.activemq" % "activemq-client" % "5.15.12" exclude ("org.apache.geronimo.specs", "geronimo-jms_1.1_spec"),
+  "org.apache.activemq" % "activemq-client" % "5.16.1" exclude ("org.apache.geronimo.specs", "geronimo-jms_1.1_spec"),
   "com.typesafe" % "config" % "1.4.0",
-  "org.apache.activemq" % "artemis-jms-client" % "2.15.0" exclude ("commons-logging", "commons-logging"),
+  "org.apache.activemq" % "artemis-jms-client" % "2.17.0" exclude ("commons-logging", "commons-logging"),
   "org.apache.rocketmq" % "rocketmq-client" % "4.7.0" exclude ("io.netty", "netty-all") exclude ("commons-logging", "commons-logging"),
   "com.softwaremill.kmq" %% "core" % "0.2.3",
   "io.prometheus" % "simpleclient" % prometheusVersion,
