@@ -1,0 +1,40 @@
+global:
+  scrape_interval: 5s
+  external_labels:
+    monitor: 'my-monitor'
+  evaluation_interval: 5s
+
+rule_files:
+  - 'prometheus.rules'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets:
+{% for node in node_exporters %}
+        - "{{hostvars[node]['ansible_fqdn']}}:9100"
+{% endfor %}
+
+  - job_name: 'receiver'
+    static_configs:
+      - targets:
+{% for receiver in receivers %}
+        - "{{hostvars[receiver]['ansible_fqdn']}}:{{ mqperf_scrape_port}}"
+{% endfor %}
+
+  - job_name: 'sender'
+    static_configs:
+      - targets:
+{% for sender in senders %}
+        - "{{hostvars[sender]['ansible_fqdn']}}:{{ mqperf_scrape_port}}"
+{% endfor %}
+
+  - job_name: 'broker'
+    static_configs:
+      - targets:
+{% for broker in brokers %}
+        - "{{hostvars[broker]['ansible_fqdn']}}:{{ 8181 }}"
+{% endfor %}

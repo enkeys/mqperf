@@ -1,0 +1,10 @@
+storage_path: /opt/prometheus
+receivers: "{{ groups['receiver'] }}"
+senders: "{{ groups['sender'] }}"
+brokers: "{{ groups['broker'] }}"
+node_exporters: "{{ groups['all'] }}"
+
+prometheus_image: quay.io/prometheus/prometheus
+prometheus_image_tag: v2.26.0
+
+mqperf_scrape_port: 9193

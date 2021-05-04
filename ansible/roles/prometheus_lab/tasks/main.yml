@@ -1,0 +1,38 @@
+---
+- name: Creates directory
+  file:
+    path: "/etc/prometheus"
+    state: directory
+
+- name: Upload prometheus configuraion file
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+
+- name: Upload prometheus rules file
+  template:
+    src: prometheus.rules
+    dest: /etc/prometheus/prometheus.rules
+
+- name: Remove Prometheus container
+  containers.podman.podman_container:
+    name: prometheus
+    state: absent
+
+- name: Ensure Prometheus container is running
+  containers.podman.podman_container:
+    name: prometheus
+    image: "{{ prometheus_image }}:{{ prometheus_image_tag }}"
+    state: present
+    recreate: yes
+    volumes:
+      - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
+      - /etc/prometheus/prometheus.rules:/etc/prometheus/prometheus.rules:Z 
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-admin-api'
+      - '--web.enable-lifecycle'
+    expose:
+      - '9090'
+    ports:
+      - "9090:9090"
