@@ -1,0 +1,30 @@
+---
+
+- name: Creates loki dir
+  file:
+    path: "/etc/loki"
+    state: directory
+
+- name: Upload Loki configuraion file
+  template:
+    src: loki.yaml.j2
+    dest: /etc/loki/loki.yaml
+
+- name: Remove Loki container
+  containers.podman.podman_container:
+    name: loki
+    state: absent
+
+- name: Ensure Loki container is running
+  containers.podman.podman_container:
+    name: loki
+    image: "{{ loki_image }}:{{ loki_image_tag }}"
+    command: -config.file=/etc/loki/loki.yaml
+    state: present
+    recreate: yes
+    volumes:
+      - "/etc/loki/loki.yaml:/etc/loki/loki.yaml:z"
+    expose:
+      - '3100'
+    ports:
+      - "3100:3100"
