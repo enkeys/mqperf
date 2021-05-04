@@ -1,0 +1,42 @@
+---
+- name: Creates directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+  loop:
+    - "/etc/grafana/provisioning/dashboards"
+    - "/etc/grafana/provisioning/datasources"
+    - "/var/lib/grafana/dashboards/"
+
+- name: Upload files
+  template:
+    src: "{{ item }}"
+    dest: "/{{ item }}"
+  loop:
+    - "etc/grafana/provisioning/dashboards/default.yml"
+    - "etc/grafana/provisioning/datasources/default.yml"
+    - "var/lib/grafana/dashboards/mqperf.json"
+    - "var/lib/grafana/dashboards/node_exporter.json"
+
+- name: Remove Grafana container
+  containers.podman.podman_container:
+    name: grafana
+    state: absent
+
+- name: Create Grafana container
+  containers.podman.podman_container:
+    name: grafana
+    image: "{{ grafana_image }}:{{ grafana_image_tag }}"
+    state: present
+    recreate: yes
+    env:
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password}}"
+      # GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
+    volumes:
+      - "/etc/grafana/provisioning:/etc/grafana/provisioning:Z"
+      - "/var/lib/grafana/dashboards:/var/lib/grafana/dashboards:Z"
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"

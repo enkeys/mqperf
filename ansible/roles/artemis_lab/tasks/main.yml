@@ -245,6 +245,29 @@
     - "{{ artemis_broker_slave_1 }}"
 
 
+## WORKS
+# -javaagent:"${ARTEMIS_HOME}/lib/jmx_prometheus_javaagent-0.15.0.jar"="8181:${ARTEMIS_INSTANCE_ETC}/prometheus_exporter.yml" \
+- name: Add prometheus exporter agent
+  lineinfile:
+#     path: /opt/{{ artemis_name }}-broker/bin/artemis
+#     line: '    -javagent:"$ARTEMIS_HOME/lib/jmx_prometheus_javaagent-0.15.0.jar"="8080:$ARTEMIS_INSTANCE_ETC/prometheus_exporter.yml \'
+#     insertafter: '^$ARTEMIS_CLUSTER_PROPS \'
+#     firstmatch: yes
+#     state: present
+    path: /opt/{{ artemis_name }}-broker/etc/artemis.profile
+    line: JAVA_ARGS='-javaagent:"${ARTEMIS_HOME}/lib/jmx_prometheus_javaagent-0.15.0.jar"="8181:${ARTEMIS_INSTANCE_ETC}/prometheus_exporter.yml" $JAVA_ARGS'
+    state: present
+
+- name: Add prometheus exporter agent
+  lineinfile:
+    path: /opt/{{ artemis_name }}-broker/etc/artemis.profile
+    # path: /opt/{{ artemis_name }}-broker/bin/artemis
+    # line: '    -Dcom.sun.management.jmxremote=true \'
+    line: JAVA_ARGS="$JAVA_ARGS -Dcom.sun.management.jmxremote=true"
+    # insertafter: '^-Dartemis.home="$ARTEMIS_HOME" \'
+    # firstmatch: yes
+    state: present
+
 - name: Allow Artemis replicator
   ansible.posix.firewalld:
     port: 61716/tcp
