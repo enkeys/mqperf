@@ -1,0 +1,31 @@
+---
+
+- hosts: sender,receiver, broker
+  gather_facts: true
+
+- hosts: receiver:sender
+  vars:
+    test_name: "lab_artemis-25threads.json.j2"
+  tasks:
+  - name: Set facts for env variables
+    set_fact:
+      run_id: "run1"
+  - name: Copy test template
+    template:
+      src: "{{ playbook_dir }}/tests/{{ test_name }}"
+      dest: /tmp/test-config.json
+
+- hosts: receiver
+  environment:
+    RUN_ID: "{{ run_id }}"
+  tasks:
+  - name: Start receiver
+    shell: nohup /tmp/mqperf.sh start
+
+- hosts: sender
+  environment:
+    RUN_ID: "{{ run_id }}"
+  tasks:
+  - name: Start sender
+    shell: nohup /tmp/mqperf.sh start
+

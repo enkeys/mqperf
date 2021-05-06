@@ -1,0 +1,5 @@
+---
+
+- hosts: broker
+  roles:
+    - role: artemis_lab

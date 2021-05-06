@@ -1,0 +1,12 @@
+--- 
+- hosts: receiver
+  roles:
+    - role: mqperf_node_lab
+      vars:
+        mqperf_type: Receiver
+
+- hosts: sender
+  roles:
+    - role: mqperf_node_lab
+      vars:
+        mqperf_type: Sender

@@ -1,0 +1,15 @@
+---
+
+- hosts: sender,receiver, broker
+  gather_facts: true
+
+- hosts: sender,receiver,broker
+  roles:
+    - role: node_exporter
+    - role: promtail
+
+- hosts: monitor
+  roles:
+    - role: prometheus_lab
+    - role: loki
+    - role: grafana_lab

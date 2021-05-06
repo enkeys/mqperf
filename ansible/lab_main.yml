@@ -1,0 +1,22 @@
+---
+
+- hosts: localhost
+  roles:
+    - mqperf_build_lab
+  tags: build
+
+- name: Setup broker nodes
+  import_playbook: lab_setup_artemis.yml
+  tags: deploy, broker
+
+- name: Setup MQPerf clients
+  import_playbook: lab_provision_mqperf_nodes.yml
+  tags: deploy, clients
+
+- name: Setup monitoring (Prometheus & Grafana)
+  import_playbook: lab_setup_prometheus.yml
+  tags: deploy, prometheus
+
+- name: Run MQPerf tests
+  import_playbook: lab_run_tests.yml
+  tags: test
