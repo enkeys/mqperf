@@ -20,8 +20,9 @@
     name: loki
     image: "{{ loki_image }}:{{ loki_image_tag }}"
     command: -config.file=/etc/loki/loki.yaml
-    state: present
+    state: started
     recreate: yes
+    force_restart: yes
     volumes:
       - "/etc/loki/loki.yaml:/etc/loki/loki.yaml:z"
     expose:
