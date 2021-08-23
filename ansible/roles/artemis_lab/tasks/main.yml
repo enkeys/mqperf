@@ -9,16 +9,21 @@
     name: "{{ artemis_username }}"
     shell: /bin/bash
 
-- name: Copying builded artemis
-  copy:
-    src: "{{ playbook_dir }}/artemis_packages/{{ artemis_archive_name }}"
-    dest: "{{ artemis_builded_dest }}"
+- name: Download artemis
+  get_url:
+    dest: "{{ artemis_download_dest }}"
+    url:  "{{ artemis_download_url }}"
+
+# - name: Copying builded artemis
+#   copy:
+#     src: "{{ playbook_dir }}/artemis_packages/{{ artemis_archive_name }}"
+#     dest: "{{ artemis_download_dest }}"
 
 - name: Unpack archive
   unarchive:
     copy: no
     dest: /opt
-    src: "{{ artemis_builded_dest }}"
+    src: "{{ artemis_download_dest }}"
     creates: /opt/{{ artemis_name }}
     owner: "{{ artemis_username }}"
 
@@ -84,6 +89,11 @@
 #     name: "artemis_broker_slave_3"
 #   with_items:
 #     - "{{ artemis_broker_slave_3 }}"
+
+- name: Cleanup instances dir
+  file:
+    state: absent
+    path: /opt/{{ artemis_name }}-broker
 
 - name: Create master brokers
   run_once: true
@@ -226,12 +236,12 @@
     path: /opt/{{ artemis_name }}-broker/etc/artemis.profile
     regexp: 'Xmx2G'
     replace: 'Xmx16G -XX:+AlwaysPreTouch'
-    backup: yes
+    backup: true
 
 - name: Download prometheus exporter agent
   get_url:
     url: "{{ artemis_prometheus_exporter_url }}"
-    dest: /opt/{{ artemis_name }}/lib/jmx_prometheus_javaagent-0.15.0.jar
+    dest: /opt/{{ artemis_name }}/lib/jmx_prometheus_javaagent.jar
     owner: "{{ artemis_username }}"
 
 - name: Copy prometheus_exporter.yml to master
@@ -240,44 +250,42 @@
   template:
     src: prometheus_exporter.yml
     dest: /opt/{{ artemis_name }}-broker/etc/prometheus_exporter.yml
+    owner: "{{ artemis_username }}"
   with_items:
     - "{{ artemis_broker_master_1 }}"
     - "{{ artemis_broker_slave_1 }}"
 
-
-## WORKS
-# -javaagent:"${ARTEMIS_HOME}/lib/jmx_prometheus_javaagent-0.15.0.jar"="8181:${ARTEMIS_INSTANCE_ETC}/prometheus_exporter.yml" \
 - name: Add prometheus exporter agent
   lineinfile:
-#     path: /opt/{{ artemis_name }}-broker/bin/artemis
-#     line: '    -javagent:"$ARTEMIS_HOME/lib/jmx_prometheus_javaagent-0.15.0.jar"="8080:$ARTEMIS_INSTANCE_ETC/prometheus_exporter.yml \'
-#     insertafter: '^$ARTEMIS_CLUSTER_PROPS \'
-#     firstmatch: yes
-#     state: present
     path: /opt/{{ artemis_name }}-broker/etc/artemis.profile
-    line: JAVA_ARGS='-javaagent:"${ARTEMIS_HOME}/lib/jmx_prometheus_javaagent-0.15.0.jar"="8181:${ARTEMIS_INSTANCE_ETC}/prometheus_exporter.yml" $JAVA_ARGS'
+    line: JAVA_ARGS="-javaagent:$ARTEMIS_HOME/lib/jmx_prometheus_javaagent.jar=8181:$ARTEMIS_INSTANCE_ETC/prometheus_exporter.yml $JAVA_ARGS"
     state: present
 
-- name: Add prometheus exporter agent
+- name: Enable JMX remote
   lineinfile:
     path: /opt/{{ artemis_name }}-broker/etc/artemis.profile
-    # path: /opt/{{ artemis_name }}-broker/bin/artemis
-    # line: '    -Dcom.sun.management.jmxremote=true \'
     line: JAVA_ARGS="$JAVA_ARGS -Dcom.sun.management.jmxremote=true"
-    # insertafter: '^-Dartemis.home="$ARTEMIS_HOME" \'
-    # firstmatch: yes
     state: present
+
+- name:
+  include_tasks: metrics.yml
 
 - name: Allow Artemis replicator
   ansible.posix.firewalld:
     port: 61716/tcp
-    permanent: yes
+    permanent: true
     state: enabled
 
 - name: Allow Artemis acceptor
   ansible.posix.firewalld:
     port: 61616/tcp
-    permanent: yes
+    permanent: true
+    state: enabled
+
+- name: Allow Artemis console
+  ansible.posix.firewalld:
+    port: 8161/tcp
+    permanent: true
     state: enabled
 
 - name: Reload systemd
@@ -286,7 +294,7 @@
 
 - name: Start artemis
   environment:
-    ARTEMIS_USER: "{{artemis_username}}"
+    ARTEMIS_USER: "{{ artemis_username }}"
   service:
     name: artemis
     state: restarted

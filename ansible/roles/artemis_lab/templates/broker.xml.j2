@@ -258,5 +258,10 @@ under the License.
             </anycast>
          </address>
       </addresses>
+      <jmx-management-enabled>true</jmx-management-enabled>
+      <metrics-plugin class-name="org.apache.activemq.artemis.core.server.metrics.plugins.ArtemisPrometheusMetricsPlugin"/>
+      <message-counter-enabled>true</message-counter-enabled>
+      <message-counter-max-day-history>7</message-counter-max-day-history>
+      <message-counter-sample-period>60000</message-counter-sample-period>
    </core>
 </configuration>

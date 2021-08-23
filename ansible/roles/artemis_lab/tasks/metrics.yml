@@ -1,0 +1,37 @@
+---
+
+- name: Package Maven
+  ansible.builtin.package:
+    name: git
+    state: latest
+
+- name: Clone metrics plugin
+  git:
+    repo: https://github.com/rh-messaging/artemis-prometheus-metrics-plugin.git
+    dest: /tmp/artemis-metrics
+    single_branch: true
+    version: "{{ artemis_metrics_plugin_tag }}"
+  environment:
+    GIT_TERMINAL_PROMPT: '0'
+
+- name: Package Maven
+  ansible.builtin.package:
+    name: maven
+    state: latest
+
+- name: Run mvn install
+  ansible.builtin.command: mvn install
+  args:
+    chdir: /tmp/artemis-metrics
+
+- name: Copy metrics plugin
+  ansible.builtin.copy:
+    src: /tmp/artemis-metrics/artemis-prometheus-metrics-plugin/target/artemis-prometheus-metrics-plugin-{{ artemis_metrics_plugin_version }}.jar
+    dest: /opt/{{ artemis_name }}/lib
+    remote_src: true
+
+- name: Copy metrics servlet
+  ansible.builtin.copy:
+    src: /tmp/artemis-metrics/artemis-prometheus-metrics-plugin-servlet/target/metrics.war
+    dest: /opt/{{ artemis_name }}/web
+    remote_src: true
