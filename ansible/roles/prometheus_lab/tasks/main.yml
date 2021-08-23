@@ -23,8 +23,9 @@
   containers.podman.podman_container:
     name: prometheus
     image: "{{ prometheus_image }}:{{ prometheus_image_tag }}"
-    state: present
+    state: started
     recreate: yes
+    force_restart: yes
     volumes:
       - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
       - /etc/prometheus/prometheus.rules:/etc/prometheus/prometheus.rules:Z 

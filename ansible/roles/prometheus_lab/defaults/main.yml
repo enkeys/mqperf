@@ -5,6 +5,6 @@ brokers: "{{ groups['broker'] }}"
 node_exporters: "{{ groups['all'] }}"
 
 prometheus_image: quay.io/prometheus/prometheus
-prometheus_image_tag: v2.26.0
+prometheus_image_tag: v2.29.1
 
 mqperf_scrape_port: 9193

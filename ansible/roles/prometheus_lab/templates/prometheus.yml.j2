@@ -32,9 +32,16 @@ scrape_configs:
         - "{{hostvars[sender]['ansible_fqdn']}}:{{ mqperf_scrape_port}}"
 {% endfor %}
 
-  - job_name: 'broker'
+  - job_name: 'broker_prometheus_exporter'
     static_configs:
       - targets:
 {% for broker in brokers %}
         - "{{hostvars[broker]['ansible_fqdn']}}:{{ 8181 }}"
+{% endfor %}
+
+  - job_name: 'broker_metrics'
+    static_configs:
+      - targets:
+{% for broker in brokers %}
+        - "{{hostvars[broker]['ansible_fqdn']}}:{{ 8161 }}"
 {% endfor %}
