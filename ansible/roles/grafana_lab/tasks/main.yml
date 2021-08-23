@@ -3,7 +3,7 @@
   file:
     path: "{{ item }}"
     state: directory
-    recurse: yes
+    recurse: true
   loop:
     - "/etc/grafana/provisioning/dashboards"
     - "/etc/grafana/provisioning/datasources"
@@ -17,7 +17,11 @@
     - "etc/grafana/provisioning/dashboards/default.yml"
     - "etc/grafana/provisioning/datasources/default.yml"
     - "var/lib/grafana/dashboards/mqperf.json"
-    - "var/lib/grafana/dashboards/node_exporter.json"
+
+- name: Upload files
+  ansible.builtin.copy:
+    src: "templates/var/lib/grafana/dashboards/node_exporter.json"
+    dest: "/var/lib/grafana/dashboards/node_exporter.json"
 
 - name: Remove Grafana container
   containers.podman.podman_container:
@@ -28,8 +32,9 @@
   containers.podman.podman_container:
     name: grafana
     image: "{{ grafana_image }}:{{ grafana_image_tag }}"
-    state: present
+    state: started
     recreate: yes
+    force_restart: yes
     env:
       GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password}}"
       # GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"

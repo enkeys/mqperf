@@ -3909,6 +3909,16 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "description": null,
+        "error": null,
+        "hide": 2,
+        "label": null,
+        "name": "DS__VICTORIAMETRICS",
+        "query": "prom1",
+        "skipUrlSync": false,
+        "type": "constant"
       }
     ]
   },

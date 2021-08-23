@@ -10,8 +10,8 @@ datasources:
     editable: true
 
   - name: 'loki1'
-        access: proxy
-        type: loki
-        orgId: 1
-        url: 'http://{{ ansible_fqdn }}:3100'
-        version: 1
+    access: proxy
+    type: loki
+    orgId: 1
+    url: 'http://{{ ansible_fqdn }}:3100'
+    version: 1
